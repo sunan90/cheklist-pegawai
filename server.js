@@ -143,3 +143,17 @@ app.get('/rekap-bulanan/:bulan', authenticateToken, async (req, res) => {
 app.listen(3000, () => {
   console.log('Server berjalan di http://localhost:3000');
 });
+
+// Endpoint cek status checklist minggu ini
+app.get('/api/checklist/status', (req, res) => {
+  const { userId, minggu } = req.query;
+  db.query(
+    'SELECT * FROM checklist WHERE user_id = ? AND minggu = ?',
+    [userId, minggu],
+    (err, results) => {
+      if (err) return res.json({ exists: false });
+      res.json({ exists: results.length > 0 });
+    }
+  );
+});
+
