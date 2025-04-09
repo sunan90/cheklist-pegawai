@@ -1,52 +1,79 @@
 // script.js
 
-const API_BASE = 'https://your-backend-url.onrender.com'; // Ganti dengan URL backend kamu
+// Cek jika di dashboard, jalankan ini
+document.addEventListener("DOMContentLoaded", () => {
+  const path = window.location.pathname;
 
-const user = JSON.parse(localStorage.getItem('user'));
-if (!user) window.location.href = 'index.html';
-
-// Tampilkan nama user
-const userNameEl = document.getElementById('userName');
-if (userNameEl) userNameEl.innerText = user.name;
-
-// Logout
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) logoutBtn.addEventListener('click', () => {
-  localStorage.removeItem('user');
-  window.location.href = 'index.html';
+  if (path.includes("dashboard.html")) {
+    loadUserInfo();
+    setupChecklistForm();
+  } else if (path.includes("admin.html")) {
+    // akan kita lanjutkan nanti untuk admin
+  }
 });
 
-// Submit checklist
-const checklistForm = document.getElementById('checklistForm');
-if (checklistForm) {
-  checklistForm.addEventListener('submit', async (e) => {
+function loadUserInfo() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) {
+    alert("Silakan login dulu.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  document.getElementById("username").textContent = user.name;
+  document.getElementById("profilePic").src = user.photo
+    ? `/uploads/${user.photo}`
+    : "default.png";
+
+  checkThisWeekStatus(user.id);
+}
+
+function setupChecklistForm() {
+  const form = document.getElementById("checklistForm");
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const checklist = document.getElementById('checklist').value;
-    const response = await fetch(`${API_BASE}/api/submit-checklist`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.id, checklist })
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const checklist = {
+      userId: user.id,
+      minggu: getCurrentWeek(),
+      checklist: {
+        task1: form.task1.checked,
+        task2: form.task2.checked,
+        task3: form.task3.checked
+      }
+    };
+
+    const res = await fetch("http://localhost:3000/api/checklist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(checklist)
     });
-    const data = await response.json();
-    alert(data.message);
+
+    const data = await res.json();
+    document.getElementById("statusMsg").textContent = data.message;
   });
 }
 
-// Upload foto profil
-const fotoForm = document.getElementById('fotoForm');
-if (fotoForm) {
-  fotoForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const file = document.getElementById('foto').files[0];
-    const formData = new FormData();
-    formData.append('foto', file);
-    formData.append('userId', user.id);
+function getCurrentWeek() {
+  const now = new Date();
+  const onejan = new Date(now.getFullYear(), 0, 1);
+  const week = Math.ceil(((now - onejan) / 86400000 + onejan.getDay() + 1) / 7);
+  return `${now.getFullYear()}-W${week}`;
+}
 
-    const response = await fetch(`${API_BASE}/api/upload-foto`, {
-      method: 'POST',
-      body: formData
-    });
-    const data = await response.json();
-    alert(data.message);
-  });
+async function checkThisWeekStatus(userId) {
+  const minggu = getCurrentWeek();
+  const res = await fetch(`http://localhost:3000/api/checklist/status?userId=${userId}&minggu=${minggu}`);
+  const data = await res.json();
+
+  if (data.exists) {
+    document.getElementById("statusMsg").textContent = "✔️ Checklist minggu ini sudah dikirim.";
+    document.getElementById("checklistForm").style.display = "none";
+  }
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "index.html";
 }
