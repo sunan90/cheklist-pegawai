@@ -1,20 +1,30 @@
-<!-- dashboard.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checklist Mingguan</title>
-  <link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Pegawai</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>Checklist Mingguan</h1>
-    <div id="userProfile"></div>
-    <form id="checklistForm"></form>
-    <button id="submitChecklist">Submit Checklist</button>
-    <div id="statusMessage"></div>
+    <div class="profile-section">
+      <img id="profilePic" src="" alt="Foto Profil" class="profile-pic" />
+      <input type="file" id="uploadFoto" />
+      <button onclick="uploadFoto()">Upload Foto</button>
+    </div>
+
+    <form id="checklistForm">
+      <div id="checklistContainer">
+        <!-- Checklist akan dimuat berdasarkan user login -->
+      </div>
+      <button type="submit">Submit Checklist</button>
+    </form>
+
+    <button onclick="logout()">Logout</button>
   </div>
-  <script src="/script.js"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>
