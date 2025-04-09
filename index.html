@@ -1,26 +1,21 @@
-<!-- index.html -->
+<!-- Struktur Project Checklist Pegawai -->
+<!-- File: client/index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Checklist Pegawai</title>
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container login-container">
-    <h1>Login</h1>
-    <form id="loginForm">
-      <label for="username">Nama:</label>
-      <input type="text" id="username" name="username" required />
-
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required />
-
-      <button type="submit">Login</button>
-    </form>
-    <div id="loginError" class="error"></div>
+  <div class="login-container">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Nama">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="login-error"></p>
   </div>
-  <script src="/script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
