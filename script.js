@@ -1,25 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Checklist Pegawai</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="container login-container">
-    <h2>Login Pegawai</h2>
-    <form id="loginForm">
-      <label for="username">Nama:</label>
-      <input type="text" id="username" name="username" required />
+// script.js
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required />
+const API_BASE = 'https://your-backend-url.onrender.com'; // Ganti dengan URL backend kamu
 
-      <button type="submit">Login</button>
-    </form>
-    <div id="loginMessage"></div>
-  </div>
-  <script src="script.js"></script>
-</body>
-</html>
+const user = JSON.parse(localStorage.getItem('user'));
+if (!user) window.location.href = 'index.html';
+
+// Tampilkan nama user
+const userNameEl = document.getElementById('userName');
+if (userNameEl) userNameEl.innerText = user.name;
+
+// Logout
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('user');
+  window.location.href = 'index.html';
+});
+
+// Submit checklist
+const checklistForm = document.getElementById('checklistForm');
+if (checklistForm) {
+  checklistForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const checklist = document.getElementById('checklist').value;
+    const response = await fetch(`${API_BASE}/api/submit-checklist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id, checklist })
+    });
+    const data = await response.json();
+    alert(data.message);
+  });
+}
+
+// Upload foto profil
+const fotoForm = document.getElementById('fotoForm');
+if (fotoForm) {
+  fotoForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const file = document.getElementById('foto').files[0];
+    const formData = new FormData();
+    formData.append('foto', file);
+    formData.append('userId', user.id);
+
+    const response = await fetch(`${API_BASE}/api/upload-foto`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+    alert(data.message);
+  });
+}
